@@ -2,7 +2,7 @@
     
     "routes": [
         {
-          "route": "/fetchdata",
+          "route": "/*",
           "allowedRoles": ["authenticated"]
         }
     ],
