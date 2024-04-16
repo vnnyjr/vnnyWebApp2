@@ -1,11 +1,11 @@
 {
-    "navigationFallback": {
-        "rewrite": "/index.html"
-    },
     "routes": [
         {
           "route": "/youtube",
           "allowedRoles": ["authenticated"]
         }
-      ]   
+    ],
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    }  
 }
