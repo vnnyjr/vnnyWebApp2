@@ -1,0 +1,122 @@
+@page "/youtube"
+@using RadzenBlazorAzureStaticWebApp.Tables
+@inject HttpClient Http
+
+<PageTitle>YouTube Searcher</PageTitle>
+
+
+<h3>Search YouTube Videos</h3>
+<p>Please <a href="/.auth/login/aad">log in</a> to continue.</p>
+<!-- Search input and button -->
+<div>
+    <input type="text" @bind="searchTerm" placeholder="Enter search term..." />
+    <RadzenButton Text="Search" Click="@SearchVideos" />
+</div>
+
+<!-- Buttons to manipulate the grid -->
+<RadzenButton Text="Reset" Click="@Reset" Style="margin-top: 20px; margin-bottom: 5px;" /><RadzenButton Text="Clear Selection" Click="@ClearSelection" Style="margin-top: 20px; margin-bottom: 5px;"/>
+
+<!-- Radzen Data Grid and its Title -->
+<RadzenDataGrid Style="width: 1200px; height: 500px;"
+                Data="@videos" TItem="Videos" Count="@videos.Count" PageSize="10"
+                AllowPaging="true" AllowSorting="true" AllowColumnResize="true" 
+                AllowColumnPicking="true" ShowPagingSummary="true" AllowFiltering="true" 
+                IsLoading=@isLoading @ref="grid" RowSelect="@(args => OnRowSelect(args))" >
+    <Columns>
+        <RadzenDataGridColumn TItem="Videos" Property="Thumbnail" Title="Thumbnail" Width="65px" Sortable="false" Filterable="false">
+            <Template Context="video">
+                <img src="@video.Thumbnail?.Default?.Url" alt="Video Thumbnail" style="max-width: 60px; max-height: 45px;"/>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Videos" Property="Title" Title="Title" Width="300px" />
+        <RadzenDataGridColumn TItem="Videos" Property="Channel" Title="Channel" Width="100px" />
+        <RadzenDataGridColumn TItem="Videos" Property="Published" Title="Published" Width="100px" />
+        <RadzenDataGridColumn TItem="Videos" Property="Duration" Title="Duration" Width="100px" />
+        <RadzenDataGridColumn TItem="Videos" Property="Url" Title="URL" Width="200px">
+            <Template Context="video">
+                <a href="@video.Url" target="_blank">@video.Url</a>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+<!-- This section will display the details of the selected video -->
+@if (selectedVideo != null)
+{
+    <div style="display: flex; justify-content: flex-start; align-items: flex-start;">
+        <div>
+            <img src="@selectedVideo.Thumbnail?.Medium?.Url" alt="Video Thumbnail" style="max-width: 320px; height: auto; margin-right: 20px;"/>
+        </div>   
+        <div>
+            <h3>Selected Video Details</h3>
+            Title: @selectedVideo.Title<br/>
+            Channel: @selectedVideo.Channel<br/>
+            Published: @selectedVideo.Published<br/>
+            Duration: @selectedVideo.Duration<br/>
+            Url: <a href="@selectedVideo.Url" target="_blank">@selectedVideo.Url</a><br/>
+        </div>
+    </div>
+}
+
+
+@code {
+    private RadzenDataGrid<Videos>? grid;
+    private string? searchTerm;
+    private List<Videos> videos = new List<Videos>();
+    private bool isLoading = false;
+    private Videos? selectedVideo;
+    private Videos? previouslySelectedVideo = null;
+    
+    // This method is triggered when Search button
+    private async Task SearchVideos()
+    {
+        isLoading = true;
+        selectedVideo = null; // Clear the selected video
+        var response = await Http.GetAsync($"https://func-app-powershell001.azurewebsites.net/api/HttpTrigger3?searchterm={searchTerm}");
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<Videos>>(jsonString);
+            videos = result ?? new List<Videos>(); // In case result is null, assign an empty list
+        }
+        else
+        {
+            videos = new List<Videos>(); // Clear the list or handle the error as needed
+        }
+        isLoading = false;
+    }
+
+    // This method is triggered when pressing the reset button
+    private async Task Reset()
+    {
+        isLoading = true;
+        grid.Reset(true); 
+        await grid.FirstPage(true);
+        isLoading = false;
+    }
+
+    // This method is triggered when a row is selected from the grid
+    private void OnRowSelect(Videos video)
+    {
+        if (previouslySelectedVideo == video)
+        {
+            // Deselect
+            selectedVideo = null;
+            previouslySelectedVideo = null;
+        }
+        else
+        {
+            // Select new
+            selectedVideo = video;
+            previouslySelectedVideo = video;
+        }
+    }
+
+    private void ClearSelection()
+    {
+        selectedVideo = null;
+        previouslySelectedVideo = null;
+    }
+
+}
