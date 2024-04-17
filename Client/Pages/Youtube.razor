@@ -1,9 +1,6 @@
 @page "/youtube"
-@attribute [Authorize]
 @using RadzenBlazorAzureStaticWebApp.Tables
 @inject HttpClient Http
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
 
 <PageTitle>YouTube Searcher</PageTitle>
 
@@ -71,18 +68,6 @@
     private Videos? selectedVideo;
     private Videos? previouslySelectedVideo = null;
     
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (!user.Identity.IsAuthenticated)
-        {
-            var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-            NavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}", true);
-        }
-    }
-
     // This method is triggered when Search button
     private async Task SearchVideos()
     {
