@@ -1,14 +1,15 @@
 @page "/youtube"
 @attribute [Authorize]
 @using RadzenBlazorAzureStaticWebApp.Tables
-@using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <PageTitle>YouTube Searcher</PageTitle>
 
 
 <h3>Search YouTube Videos</h3>
-<p>Please <a href="/.auth/login/aad">log in</a> to continue.</p>
+
 <!-- Search input and button -->
 <div>
     <input type="text" @bind="searchTerm" placeholder="Enter search term..." />
@@ -70,6 +71,18 @@
     private Videos? selectedVideo;
     private Videos? previouslySelectedVideo = null;
     
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            NavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}", true);
+        }
+    }
+
     // This method is triggered when Search button
     private async Task SearchVideos()
     {
