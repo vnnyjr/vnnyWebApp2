@@ -1,37 +1,12 @@
-﻿<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly">
-        <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(MainLayout)">
-                <NotAuthorized>
-                    @if (context.User?.Identity?.IsAuthenticated ?? false)
-                    {
-                        RedirectToLogin();
-                    }
-                    else
-                    {
-                        <p>You do not have permission to view this page.</p>
-                    }
-                </NotAuthorized>
-                <Authorizing>
-                    <p>Checking authorization status...</p>
-                </Authorizing>
-            </AuthorizeRouteView>
-        </Found>
-        <NotFound>
-            <p>Sorry, there's nothing here.</p>
-        </NotFound>
-    </Router>
-</CascadingAuthenticationState>
-
-@code {
-    #nullable disable
-    [Inject] private NavigationManager NavigationManager { get; set; }
-    #nullable restore
-
-    private void RedirectToLogin()
-    {
-        var returnUrl = NavigationManager.Uri;
-        NavigationManager.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
-    }
-}
-
+﻿<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
