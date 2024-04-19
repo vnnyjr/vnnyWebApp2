@@ -1,7 +1,10 @@
 @page "/youtube"
 @using RadzenBlazorAzureStaticWebApp.Tables
+@using RadzenBlazorAzureStaticWebApp.Services
 @inject HttpClient Http
 @inject NavigationManager NavMan
+@inject AuthService AuthService
+
 
 <PageTitle>YouTube Searcher</PageTitle>
 
@@ -61,58 +64,22 @@
 }
 
 
+
 @code {
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await Http.GetAsync("./.auth/me");
-        if (!response.IsSuccessStatusCode)
+        var user = await AuthService.GetUserInfoAsync();
+        if (user == null || !user.IsAuthenticated)
         {
-            // If we cannot get a success response, assume the user is not authenticated
-            RedirectToLogin();
-        }
-        else
-        {
-            var authInfo = await response.Content.ReadFromJsonAsync<AuthInfo>();
-            if (authInfo?.ClientPrincipal?.Identity?.IsAuthenticated != true)
-            {
-                // User is not authenticated, redirect to login
-                RedirectToLogin();
-            }
-            // If the user is authenticated, allow access to the page
+            NavMan.NavigateTo("/");
         }
     }
 
-    private void RedirectToLogin()
-    {
-        // Construct the return URL
-        var returnUrl = NavMan.Uri;
-        // Redirect to the login page and append the return URL for post-login redirection
-        NavMan.NavigateTo($"/.auth/login/aad?post_login_redirect_uri={Uri.EscapeDataString(returnUrl)}", true);
-    }
+    ///////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////// 
+    ///////////////////////////////////////////////////////
 
-    // Classes for Auth data
-    private class AuthInfo
-    {
-        public ClientPrincipal? ClientPrincipal { get; set; }
-    }
-
-    public class ClientPrincipal
-    {
-        public string? IdentityProvider { get; set; }
-        public string? UserId { get; set; }
-        public string? UserDetails { get; set; }
-        public IEnumerable<string>? UserRoles { get; set; }
-        public Identity? Identity { get; set; }
-    }
-
-    public class Identity
-    {
-        public bool IsAuthenticated { get; set; }
-    }
-
-
-    // 
     private RadzenDataGrid<Videos>? grid;
     private string? searchTerm;
     private List<Videos> videos = new List<Videos>();
