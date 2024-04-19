@@ -88,7 +88,7 @@
         // Construct the return URL
         var returnUrl = NavMan.Uri;
         // Redirect to the login page and append the return URL for post-login redirection
-        NavMan.NavigateTo($"./login?post_login_redirect_uri={Uri.EscapeDataString(returnUrl)}", true);
+        NavMan.NavigateTo($"/.auth/login/aad?post_login_redirect_uri={Uri.EscapeDataString(returnUrl)}", true);
     }
 
     // Classes for Auth data
