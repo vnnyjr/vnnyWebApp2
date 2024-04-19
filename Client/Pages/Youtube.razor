@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavMan
 @inject AuthService AuthService
-
+@inject IJSRuntime JSRuntime
 
 <PageTitle>YouTube Searcher</PageTitle>
 
@@ -66,14 +66,10 @@
 
 
 @code {
-
+    
     protected override async Task OnInitializedAsync()
     {
-        var user = await AuthService.GetUserInfoAsync();
-        if (user == null || !user.IsAuthenticated)
-        {
-            NavMan.NavigateTo("/");
-        }
+        await JSRuntime.InvokeVoidAsync("getUserInfo");
     }
 
     ///////////////////////////////////////////////////////
