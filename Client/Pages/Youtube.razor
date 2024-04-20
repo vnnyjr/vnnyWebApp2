@@ -1,6 +1,7 @@
 @page "/youtube"
 @using RadzenBlazorAzureStaticWebApp.Tables
 @using RadzenBlazorAzureStaticWebApp.Services
+@using System.Text.Json
 @inject HttpClient Http
 @inject NavigationManager NavMan
 @inject AuthService AuthService
@@ -69,7 +70,12 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await JSRuntime.InvokeVoidAsync("getUserInfo");
+        var getUserInfoTask = await JSRuntime.InvokeAsync<JsonElement>("getUserInfo");
+        
+        if (getUserInfoTask.GetProperty("clientPrincipal").ValueKind == JsonValueKind.Null)
+        {
+            NavMan.NavigateTo("/youtube", forceLoad: true);
+        }
     }
 
     ///////////////////////////////////////////////////////
