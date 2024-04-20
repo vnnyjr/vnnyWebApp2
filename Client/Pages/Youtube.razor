@@ -70,9 +70,9 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var getUserInfoTask = await JSRuntime.InvokeAsync<JsonElement>("getUserInfo");
+        var UserInfoJson = await JSRuntime.InvokeAsync<JsonElement>("getUserInfo");
         
-        if (getUserInfoTask.GetProperty("clientPrincipal").ValueKind == JsonValueKind.Null)
+        if (UserInfoJson.GetProperty("clientPrincipal").ValueKind == JsonValueKind.Null)
         {
             NavMan.NavigateTo("/youtube", forceLoad: true);
         }

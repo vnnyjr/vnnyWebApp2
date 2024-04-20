@@ -38,6 +38,7 @@
           const response = await fetch('/.auth/me');
           const payload = await response.json();
           console.log(payload);
+          return payload;
         }
     </script>
 
