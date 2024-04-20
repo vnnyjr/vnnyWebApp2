@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using System.Text.Json
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Home</PageTitle>
 
@@ -6,3 +8,16 @@
 
 <p>Please <a href="/.auth/login/aad">log in</a> to use pages with a lock icon.</p>
 <p><a href="/.auth/logout">Log Out</a></p>
+
+<h3>User Information</h3>
+<pre>@userInfo</pre>
+
+@code {
+    private string? userInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        JsonElement userInfoJson = await JSRuntime.InvokeAsync<JsonElement>("getUserInfo");
+        userInfo = JsonSerializer.Serialize(userInfoJson, new JsonSerializerOptions { WriteIndented = true });
+    }
+}
