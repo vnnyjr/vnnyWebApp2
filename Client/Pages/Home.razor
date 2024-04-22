@@ -2,34 +2,15 @@
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Welcome to Climatrol</PageTitle>
+<PageTitle>Home</PageTitle>
 
-<header>
-    <nav class="navbar">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">Climatrol</span>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/.auth/login/aad">Log In</a>
-                <a class="nav-link" href="/.auth/logout">Log Out</a>
-            </div>
-        </div>
-    </nav>
-</header>
+<h1>This is Climatrol</h1>
 
-<section class="hero">
-    <div class="container text-center">
-        <h1>Welcome to Climatrol</h1>
-        <p>Discover a world of climate control at your fingertips.</p>
-        <button class="btn btn-primary" onclick="location.href='/.auth/login/aad'">Log In to Explore</button>
-    </div>
-</section>
+<p>Please <a href="/.auth/login/aad">log in</a> to reveal hidden places.</p>
+<p><a href="/.auth/logout">Log Out</a></p>
 
-<section class="user-info">
-    <div class="container">
-        <h3>User Information</h3>
-        <pre>@userInfo</pre>
-    </div>
-</section>
+<h3>User Information</h3>
+<pre>@userInfo</pre>
 
 @code {
     private string? userInfo;
