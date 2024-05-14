@@ -1,0 +1,43 @@
+@page "/funtiontest"
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Azure Functions API</PageTitle>
+
+<h3>Test Azure Function API URL</h3>
+
+<!-- Clicking this sends a request -->
+<button @onclick="TestFunctionApi">Test Function API</button>
+
+<!-- Show the response BODY contents here -->
+@if (!string.IsNullOrWhiteSpace(apiResponse))
+{
+    <pre>@apiResponse</pre>
+}
+
+@code {
+    private string? apiResponse;
+
+    private async Task TestFunctionApi()
+    {
+        // Replace the URL with your actual Azure Function API URL
+        string functionApiUrl = "https://func-app-powershell001.azurewebsites.net/api/HttpTrigger4";
+
+        try
+        {
+            HttpResponseMessage response = await Http.GetAsync(functionApiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                apiResponse = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                apiResponse = $"Failed to call function. Status code: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            apiResponse = $"Exception occurred: {ex.Message}";
+        }
+    }
+}

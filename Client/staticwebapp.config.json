@@ -3,6 +3,10 @@
         {
           "route": "/youtube",
           "allowedRoles": ["authenticated"]
+        },
+        {
+          "route": "/functiontest",
+          "allowedRoles": ["authenticated"]
         }
     ],
 
